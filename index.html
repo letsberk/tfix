@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>RailApp – Eisenbahn Fachsystem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700"></noscript>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ══════════ LOGIN ══════════ -->
+<div id="screen-login" class="screen active">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-mark">T</div>
+      <div>
+        <h1>TFIX</h1>
+        <p>Eisenbahn Fachsystem v2.0</p>
+      </div>
+    </div>
+    <label class="form-label">Personalnummer</label>
+    <input class="form-input" id="inp-user" type="text" placeholder="12345678" value="12345678" autocomplete="username">
+    <label class="form-label">Passwort</label>
+    <input class="form-input" id="inp-pass" type="password" placeholder="••••••••" value="demo1234" autocomplete="current-password">
+    <button class="primary-btn full-btn" id="login-btn">ANMELDEN</button>
+    <p class="login-hint">Demo: 12345678 / demo1234 &nbsp;|&nbsp; Admin: admin / admin123</p>
+  </div>
+</div>
+
+<!-- ══════════ EVU AUSWAHL ══════════ -->
+<div id="screen-evu" class="screen">
+  <div class="topbar">
+    <div class="topbar-title">EVU Auswahl</div>
+  </div>
+  <div class="content">
+    <div class="evu-grid" id="evu-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════ MAIN MENU ══════════ -->
+<div id="screen-main" class="screen">
+  <div class="topbar">
+    <div class="topbar-title">TFIX <span id="main-evu-label" class="topbar-sub"></span></div>
+    <div class="topbar-icons">
+      <button class="topbar-icon" id="btn-settings" title="Einstellungen">⚙</button>
+      <button class="topbar-icon" id="btn-evu-back" title="EVU wechseln">⇄</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="btn-list" id="main-modules"></div>
+    <div class="app-footer">Ver 2.0 · Offline · Sync: 11.04.2026</div>
+  </div>
+</div>
+
+<!-- ══════════ BF / STRECKE ══════════ -->
+<div id="screen-bf" class="screen">
+  <div class="topbar"><button class="back-btn" id="bf-back">←</button><div class="topbar-title">Bf / Strecke</div></div>
+  <div class="content">
+    <div class="btn-list">
+      <button class="bli" data-toast="Meine Bahnhöfe">Meine Bahnhöfe</button>
+      <button class="bli" data-toast="Rabatte">Rabatte</button>
+      <button class="bli" data-toast="Abk./Rl100">Abk./Rl100</button>
+      <button class="bli" data-toast="Pausenräume">Pausenräume</button>
+      <button class="bli" data-toast="Bahnhofspläne">Bahnhofspläne (online)</button>
+      <button class="bli" data-toast="OSM-Bahnhofsplan">OSM-Bahnhofsplan</button>
+      <button class="bli" data-toast="Streckenbücher">Streckenbücher</button>
+    </div>
+    <div id="bf-dynamic"></div>
+  </div>
+</div>
+
+<!-- ══════════ REGELWERKE ══════════ -->
+<div id="screen-regelwerke" class="screen">
+  <div class="topbar red-bar">
+    <div class="topbar-title">Stand: 29.12.2025</div>
+    <button class="back-btn-sm" id="rw-back">← Zurück</button>
+  </div>
+  <div class="content">
+    <div class="offline-note">✅ Offline verfügbar &nbsp;·&nbsp; ❌ Online erforderlich · Festhalten zum Löschen</div>
+    <div class="irow"><div class="irow-ico">❌</div><div class="irow-body"><div class="irow-title">DBREGIO003 – Regelbuch DBREGIO für Triebfahrzeugführer</div><div class="irow-sub">Stand: 14.12.2025</div></div></div>
+    <div class="irow"><div class="irow-ico">❌</div><div class="irow-body"><div class="irow-title">301 – Signalbuch</div><div class="irow-sub">Stand: 15.12.2024</div></div></div>
+    <div class="irow"><div class="irow-ico">❌</div><div class="irow-body"><div class="irow-title">915.01 – Bremsen im Betrieb bedienen und prüfen</div><div class="irow-sub">Stand: 14.12.2025</div></div></div>
+    <div class="irow"><div class="irow-ico">❌</div><div class="irow-body"><div class="irow-title">915.0109 – BreVo Triebwagen</div><div class="irow-sub">Stand: 01.07.2023</div></div></div>
+    <div class="irow"><div class="irow-ico">❌</div><div class="irow-body"><div class="irow-title">915.0312Z01 – DBZ bei lokbespannten Reisezügen</div><div class="irow-sub">Stand: 02.01.2012</div></div></div>
+    <div class="irow"><div class="irow-ico">❌</div><div class="irow-body"><div class="irow-title">926 – Energieversorgung lokbespannter Züge</div><div class="irow-sub">Stand: 06.06.2016</div></div></div>
+    <div class="irow"><div class="irow-ico">❌</div><div class="irow-body"><div class="irow-title">102.0001 – Haftpflichtschadensfälle Grundsätze</div><div class="irow-sub">Stand: 06.09.2016</div></div></div>
+    <div class="irow"><div class="irow-ico">❌</div><div class="irow-body"><div class="irow-title">110.0001 – Unternehmensbekleidung bestellen und tragen</div><div class="irow-sub">Stand: 16.08.2024</div></div></div>
+    <div class="irow"><div class="irow-ico">❌</div><div class="irow-body"><div class="irow-title">414.25 – Reisezüge bei DB Regio abfertigen</div><div class="irow-sub">Stand: 01.05.2021</div></div></div>
+    <div class="irow"><div class="irow-ico">✅</div><div class="irow-body"><div class="irow-title">408.0101 – Zug melden und fahren</div><div class="irow-sub">Stand: 14.12.2025 · Offline</div></div></div>
+    <div class="irow"><div class="irow-ico">✅</div><div class="irow-body"><div class="irow-title">408.0331 – Abfahrauftrag</div><div class="irow-sub">Stand: 14.12.2025 · Offline</div></div></div>
+    <div id="regelwerke-dynamic"></div>
+  </div>
+</div>
+
+<!-- ══════════ TELEFONBUCH ══════════ -->
+<div id="screen-telefonbuch" class="screen">
+  <div class="topbar sticky-top">
+    <button class="back-btn" id="tel-back">←</button>
+    <div class="topbar-title">Telefonbuch</div>
+    <span class="topbar-sub" id="tel-count">–</span>
+  </div>
+  <div class="tel-search sticky-below-topbar">
+    <div class="tel-row1">
+      <input class="tel-inp" id="tel-name" type="text" placeholder="Betriebsstelle / Name">
+      <input class="tel-inp tel-rl" id="tel-rl" type="text" placeholder="Rl 100">
+    </div>
+    <div class="tel-row2">
+      <label class="checkbox-label"><input type="checkbox" id="tel-full"> Volltextsuche</label>
+    </div>
+    <div class="filter-tabs">
+      <div class="ftab active" data-filter="alle">Alle</div>
+      <div class="ftab" data-filter="telefon">Festnetz</div>
+      <div class="ftab" data-filter="mobil">Mobil</div>
+      <div class="ftab" data-filter="basa">Basa</div>
+      <div class="ftab" data-filter="langwahl">Langwahl</div>
+      <div class="ftab" data-filter="gsmr">GSM-R</div>
+      <div class="ftab" data-filter="ortsfunk">Ortsfunk</div>
+    </div>
+  </div>
+  <div class="tel-info" id="tel-info">Suchbegriff eingeben …</div>
+  <div class="content" id="tel-list"></div>
+</div>
+
+<!-- ══════════ BETRIEB-INFO ══════════ -->
+<div id="screen-betrieb" class="screen">
+  <div class="topbar"><button class="back-btn" id="betrieb-back">←</button><div class="topbar-title">Betrieb-Info</div></div>
+  <div class="content">
+    <div class="btn-list">
+      <button class="bli" data-toast="Betrieb">Betrieb</button>
+      <button class="bli" data-toast="Störungen">Störungen</button>
+      <button class="bli" data-toast="LZB Hilfe">LZB Hilfe</button>
+      <button class="bli" data-toast="PZB Hilfe">PZB Hilfe</button>
+      <button class="bli" data-toast="ETCS Sammlung">ETCS Sammlung</button>
+      <button class="bli" data-toast="LZB/PZB Einstelltabellen">LZB/PZB Einstelltabellen</button>
+      <button class="bli" data-toast="Funk">Funk</button>
+      <button class="bli" data-toast="Bremse/Brevo">Bremse/Brevo</button>
+      <button class="bli" data-toast="Lokbremsgewichte">Lokbremsgewichte</button>
+      <button class="bli" data-toast="Sichern von Zügen">Sichern von Zügen</button>
+      <button class="bli" data-toast="Festhaltekraft ermitteln">Festhaltekraft ermitteln</button>
+      <button class="bli" data-toast="Geschwindigkeitsübersicht">Geschwindigkeitsübersicht</button>
+      <button class="bli" data-toast="La Übersichtskarten">La Übersichtskarten</button>
+    </div>
+    <div id="betrieb-dynamic"></div>
+  </div>
+</div>
+
+<!-- ══════════ BAUREIHEN ══════════ -->
+<div id="screen-baureihen" class="screen">
+  <div class="topbar"><button class="back-btn" id="br-back">←</button><div class="topbar-title">Baureihen</div></div>
+  <div class="content"><div class="br-grid" id="br-grid"></div></div>
+</div>
+
+<!-- ══════════ ZUGFAHRT ══════════ -->
+<div id="screen-zugfahrt" class="screen">
+  <div class="topbar"><button class="back-btn" id="zf-back">←</button><div class="topbar-title">Zugfahrt</div></div>
+  <div class="content">
+    <div class="btn-list">
+      <button class="bli" data-toast="Bremszettel">Bremszettel / Bremsrechnung</button>
+      <button class="bli" data-toast="Wagenliste">Wagenliste &amp; Zuglänge</button>
+      <button class="bli" data-toast="Abfahrcheckliste">Abfahrcheckliste</button>
+      <button class="bli" data-toast="Signalbuch">Signalbuch (Hl, Ks, Lf)</button>
+      <button class="bli" data-toast="Streckenbesonderheiten">Streckenbesonderheiten</button>
+      <button class="bli" data-toast="Unregelmäßigkeiten">Unregelmäßigkeiten melden</button>
+    </div>
+    <div id="zugfahrt-dynamic"></div>
+  </div>
+</div>
+
+<!-- ══════════ BEFEHLE ══════════ -->
+<div id="screen-befehle" class="screen">
+  <div class="topbar"><button class="back-btn" id="bef-back">←</button><div class="topbar-title">Befehle</div></div>
+  <div class="content">
+    <div class="irow" data-toast="Buchstabiertafel"><div class="irow-ico">🔤</div><div class="irow-body"><div class="irow-title">Buchstabiertafel</div></div></div>
+    <div class="irow" data-toast="Kommunikation Grundsätze"><div class="irow-ico">📡</div><div class="irow-body"><div class="irow-title">Kommunikation Grundsätze</div></div></div>
+    <div class="irow" data-toast="Verwendung der Befehle"><div class="irow-ico">📋</div><div class="irow-body"><div class="irow-title">Verwendung der Befehle</div></div></div>
+    <div class="irow" data-toast="Aufbau und allg. Regeln"><div class="irow-ico">📐</div><div class="irow-body"><div class="irow-title">Aufbau und allg. Regeln</div></div></div>
+    <div class="irow" data-toast="Ausfüllhinweise"><div class="irow-ico">✏️</div><div class="irow-body"><div class="irow-title">Ausfüllhinweise</div></div></div>
+    <div class="irow" data-toast="Wortlaute Befehlsübermittlung"><div class="irow-ico">🗣️</div><div class="irow-body"><div class="irow-title">Wortlaute Befehlsübermittlung</div></div></div>
+    <div class="irow" data-toast="Ablaufschema"><div class="irow-ico">🔄</div><div class="irow-body"><div class="irow-title">Ablaufschema Befehlsübermittlung</div></div></div>
+    <div class="irow" data-toast="Befehle schreiben"><div class="irow-ico">✍️</div><div class="irow-body"><div class="irow-title">Befehle schreiben allgemein</div></div></div>
+    <div class="irow" data-toast="Befehle widerrufen"><div class="irow-ico">↩️</div><div class="irow-body"><div class="irow-title">Befehle widerrufen</div></div></div>
+    <div class="irow" data-toast="Digitaler Befehl Grundsatz"><div class="irow-ico">💻</div><div class="irow-body"><div class="irow-title">Digitaler Befehl: Grundsatz</div></div></div>
+    <div class="irow" data-toast="Digitaler Befehl Abruf"><div class="irow-ico">💻</div><div class="irow-body"><div class="irow-title">Digitaler Befehl: Abruf</div></div></div>
+  </div>
+</div>
+
+<!-- ══════════ WEG / ZEIT ══════════ -->
+<div id="screen-wegzeit" class="screen">
+  <div class="topbar"><button class="back-btn" id="wz-back">←</button><div class="topbar-title">Weg / Zeit</div></div>
+  <div class="content">
+    <div class="wz-tabs">
+      <div class="wz-tab active" id="tab-wz">✓ Weg / Zeit</div>
+      <div class="wz-tab" id="tab-vs">V-Soll</div>
+    </div>
+    <div id="wz-panel" class="calc-box">
+      <p class="calc-label">Berechne Strecke oder Fahrzeit</p>
+      <div class="speed-toggle">
+        <button class="spd-btn active" id="btn-gps">✓ GPS</button>
+        <button class="spd-btn" id="btn-man">MANUAL</button>
+      </div>
+      <div class="gps-status" id="gps-st">Suche GPS Signal …</div>
+      <div id="man-inp" style="display:none;">
+        <input class="form-input" type="number" placeholder="Geschwindigkeit (km/h)" id="inp-spd">
+      </div>
+      <input class="form-input" type="number" placeholder="Wegstrecke (optional) in km" id="inp-s">
+      <input class="form-input" type="number" placeholder="Fahrzeit (optional) in min" id="inp-t">
+      <button class="secondary-btn full-btn" id="btn-calc-wz">Berechnen</button>
+      <div class="calc-result" id="res-wz"></div>
+    </div>
+    <div id="vs-panel" class="calc-box" style="display:none;">
+      <p class="calc-label">Sollgeschwindigkeit berechnen</p>
+      <input class="form-input" type="number" placeholder="Strecke in km" id="inp-s2">
+      <input class="form-input" type="number" placeholder="Zeit in Minuten" id="inp-t2">
+      <button class="secondary-btn full-btn" id="btn-calc-vs">Berechnen</button>
+      <div class="calc-result" id="res-vs"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ONLINE ══════════ -->
+<div id="screen-online" class="screen">
+  <div class="topbar"><button class="back-btn" id="onl-back">←</button><div class="topbar-title">Online Auswahl</div></div>
+  <div class="content">
+    <div class="online-row" data-toast="RIS"><div class="online-ico">RIS</div><div class="online-label">RIS (Passwort)</div></div>
+    <div class="online-row" data-toast="DB Planet"><div class="online-ico">DB</div><div class="online-label">DB Planet</div></div>
+    <div class="online-row" data-toast="DB Navigator"><div class="online-ico">DB</div><div class="online-label">DB Navigator</div></div>
+    <div class="online-row" data-toast="Tf-Portal"><div class="online-ico">TF</div><div class="online-label">Tf-Portal</div></div>
+    <div class="online-row" data-toast="Tfix Hilfe"><div class="online-ico">🚂</div><div class="online-label">Tfix online Hilfe</div></div>
+    <div class="online-row" data-toast="Ubk Onlineshop"><div class="online-ico">DB</div><div class="online-label">Ubk Onlineshop</div></div>
+    <div class="online-row" data-toast="Zugradar"><div class="online-ico">DB</div><div class="online-label">Zugradar</div></div>
+    <div class="online-row" data-toast="Wo ist mein Zug"><div class="online-ico">DB</div><div class="online-label">Wo ist mein Zug?</div></div>
+    <div class="online-row" data-toast="Fahrplan"><div class="online-ico">DB</div><div class="online-label">Fahrplan</div></div>
+  </div>
+</div>
+
+<!-- ══════════ SOS ══════════ -->
+<div id="screen-sos" class="screen">
+  <div class="topbar sos-topbar"><button class="back-btn" id="sos-back">←</button><div class="topbar-title">Standort &amp; Hilfe</div></div>
+  <div class="content">
+    <div class="sos-gps-card"><div class="sos-icon">🎯</div><div class="sos-gps-title">GPS-Status</div><div class="sos-gps-sub">Suche GPS-Signal …</div></div>
+    <div class="sos-actions">
+      <p class="sos-select">Bitte auswählen</p>
+      <button class="sos-btn-sms">➤ Standort per SMS senden</button>
+      <button class="sos-btn-emer" id="btn-sos-mb">🔖 Einsatzmerkblatt anzeigen</button>
+    </div>
+    <div class="sos-notfall">
+      <h3>Verhalten im Notfall</h3>
+      <ol>
+        <li>Notruf/Nothaltauftrag abgesetzt und ggf. LZB-Nothalt eingegeben?</li>
+        <li>Sperrung des Nachbargleises veranlasst? Bestätigung des Fdl abwarten!</li>
+        <li>Zug gegen unbeabsichtigte Bewegung gesichert?</li>
+        <li>Kurzwegspeicher ggf. gesperrt (K3456+ZD)?</li>
+        <li>Beweismittel nur gegen Quittung aushändigen!</li>
+      </ol>
+    </div>
+  </div>
+</div>
+<div id="screen-sos-mb" class="screen">
+  <div class="topbar sos-topbar"><button class="back-btn" id="sosmb-back">←</button><div class="topbar-title">Einsatzmerkblatt</div></div>
+  <div class="content">
+    <div class="sos-notfall">
+      <h3 class="sos-checklist-title">🚨 Notfall-Checkliste</h3>
+      <div class="checklist">
+        <label><input type="checkbox"> Schnellbremsung eingeleitet?</label>
+        <label><input type="checkbox"> Nothaltauftrag abgesetzt?</label>
+        <label><input type="checkbox"> LZB-Nothalt eingegeben?</label>
+        <label><input type="checkbox"> Notruf 112 abgesetzt?</label>
+        <label><input type="checkbox"> Betriebszentrale informiert?</label>
+        <label><input type="checkbox"> Nachbargleis gesperrt?</label>
+        <label><input type="checkbox"> Zug gesichert?</label>
+        <label><input type="checkbox"> Fahrgäste betreut?</label>
+        <label><input type="checkbox"> Bremszettel sichergestellt?</label>
+      </div>
+    </div>
+    <div class="sos-notfall">
+      <h3>Notrufnummern</h3>
+      <div class="sos-numbers">
+        <div class="sos-num-row"><span>🚨 Notruf</span><strong>112</strong></div>
+        <div class="sos-num-row"><span>🚂 Betriebszentrale</span><strong>030 / 297-12000</strong></div>
+        <div class="sos-num-row"><span>🔧 Technik</span><strong>0800 / DBTECH</strong></div>
+        <div class="sos-num-row"><span>👮 Bundespolizei</span><strong>01805 / 111 020</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ LA ══════════ -->
+<div id="screen-la" class="screen">
+  <div class="topbar red-bar">
+    <div class="topbar-title">La – Langsamfahrstellen</div>
+    <button class="back-btn-sm" id="la-back">← Zurück</button>
+  </div>
+  <div class="content">
+    <div class="offline-note">Stand: 11.04.2026 · Offline verfügbar</div>
+    <div class="la-row"><span>⚠️</span><div class="la-body"><div class="la-title">La 1 · Hannover–Hamburg</div><div class="la-sub">km 123,4–124,1 · 10.04.–20.04.2026</div></div><div class="la-speed">40</div></div>
+    <div class="la-row"><span>⚠️</span><div class="la-body"><div class="la-title">La 2 · Frankfurt–Mannheim</div><div class="la-sub">km 88,9–89,5 · 08.04.–15.04.2026</div></div><div class="la-speed">60</div></div>
+    <div class="la-row"><span>⚠️</span><div class="la-body"><div class="la-title">La 3 · München–Augsburg</div><div class="la-sub">km 204,2–205,0 · 01.04.–30.04.2026</div></div><div class="la-speed">30</div></div>
+    <div id="la-dynamic"></div>
+  </div>
+</div>
+
+<!-- ══════════ FORUM ══════════ -->
+<div id="screen-forum" class="screen">
+  <div class="topbar">
+    <button class="back-btn" id="forum-back">←</button>
+    <div class="topbar-title">Forum</div>
+    <button class="topbar-icon" id="btn-new-thread">＋</button>
+  </div>
+  <div class="content" id="forum-content"></div>
+</div>
+<div id="screen-forum-cat" class="screen">
+  <div class="topbar">
+    <button class="back-btn" id="forum-cat-back">←</button>
+    <div class="topbar-title" id="forum-cat-title">Kategorie</div>
+    <button class="topbar-icon" id="btn-new-thread-cat">＋</button>
+  </div>
+  <div class="content" id="forum-cat-content"></div>
+</div>
+<div id="screen-forum-thread" class="screen">
+  <div class="topbar">
+    <button class="back-btn" id="forum-thread-back">←</button>
+    <div class="topbar-title" id="forum-thread-title">Thread</div>
+  </div>
+  <div class="content" id="forum-thread-posts"></div>
+  <div class="reply-area" id="reply-area">
+    <textarea class="reply-textarea" id="reply-text" placeholder="Antwort schreiben …"></textarea>
+    <div class="reply-footer">
+      <button class="primary-btn" id="btn-post-reply">Senden</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ EINSTELLUNGEN ══════════ -->
+<div id="screen-settings" class="screen">
+  <div class="topbar"><button class="back-btn" id="set-back">←</button><div class="topbar-title">Einstellungen</div></div>
+  <div class="content">
+    <div class="settings-section">Konto</div>
+    <div class="irow">
+      <div class="irow-body"><div class="irow-title">M. Müller</div><div class="irow-sub">Nr. 12345678 · <span id="settings-evu">–</span></div></div>
+      <button class="sec-btn" id="btn-set-evu">Wechseln</button>
+    </div>
+    <div class="settings-section">Sync</div>
+    <div class="irow">
+      <div class="irow-body"><div class="irow-title">Letzter Datenabgleich</div><div class="irow-sub">11.04.2026 · 09:17 Uhr</div></div>
+      <button class="red-btn" id="btn-sync">SYNC</button>
+    </div>
+    <div class="settings-section">App</div>
+    <div class="irow"><div class="irow-body"><div class="irow-title">Version</div></div><div class="irow-right">2.0.0</div></div>
+    <div class="irow"><div class="irow-body"><div class="irow-title">Datenstand</div></div><div class="irow-right">April 2026</div></div>
+    <div class="settings-section">Admin</div>
+    <div class="irow clickable" id="btn-go-admin">
+      <div class="irow-ico">🔐</div>
+      <div class="irow-body"><div class="irow-title">Admin-Panel</div><div class="irow-sub">Inhalte, Nutzer und Module verwalten</div></div>
+      <div class="irow-right">›</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ADMIN PANEL ══════════ -->
+<div id="screen-admin" class="screen admin-screen">
+  <div class="admin-topbar">
+    <button class="back-btn" id="admin-back">←</button>
+    <div class="topbar-title">🔐 ADMIN</div>
+    <button class="admin-logout-btn" id="admin-logout-btn">Abmelden</button>
+  </div>
+  <!-- Admin login -->
+  <div id="admin-login-wrap" class="admin-login-wrap">
+    <div class="admin-login-box">
+      <h2>Admin-Zugang</h2>
+      <label class="form-label">Benutzername</label>
+      <input class="form-input dark" id="a-user" type="text" placeholder="admin">
+      <label class="form-label">Passwort</label>
+      <input class="form-input dark" id="a-pass" type="password" placeholder="••••••••">
+      <button class="admin-login-btn" id="admin-login-btn">ANMELDEN</button>
+    </div>
+  </div>
+  <!-- Admin panel content -->
+  <div id="admin-panel-wrap" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="admin-nav">
+      <button class="admin-nav-btn active" data-tab="stats">📊</button>
+      <button class="admin-nav-btn" data-tab="module">📱</button>
+      <button class="admin-nav-btn" data-tab="sections">📂</button>
+      <button class="admin-nav-btn" data-tab="upload">⬆</button>
+      <button class="admin-nav-btn" data-tab="evu">🚄</button>
+      <button class="admin-nav-btn" data-tab="users">👥</button>
+    </div>
+    <div class="admin-panels">
+
+      <!-- STATS -->
+      <div class="admin-panel active" id="ap-stats">
+        <div class="panel-title">Übersicht</div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-num" id="stat-users">–</div><div class="stat-lbl">Aktive Nutzer</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-evus">–</div><div class="stat-lbl">EVU</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-files">–</div><div class="stat-lbl">Dateien</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-sections">–</div><div class="stat-lbl">Abschnitte</div></div>
+          <div class="stat-card"><div class="stat-num">8.309</div><div class="stat-lbl">Telefonbuch</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-threads">–</div><div class="stat-lbl">Forum-Threads</div></div>
+        </div>
+        <div class="panel-title">Aktivitätslog</div>
+        <div id="admin-log" class="admin-log"></div>
+      </div>
+
+      <!-- MODULE -->
+      <div class="admin-panel" id="ap-module">
+        <div class="panel-title">Module ein-/ausblenden</div>
+        <div class="amod-list" id="amod-list"></div>
+        <button class="primary-btn" id="btn-save-modules">💾 Speichern</button>
+      </div>
+
+      <!-- SECTIONS -->
+      <div class="admin-panel" id="ap-sections">
+        <div class="panel-title">Abschnitte &amp; Dateien</div>
+        <div class="asec-list" id="asec-list"></div>
+        <div class="aform">
+          <div class="aform-title">＋ Neuer Abschnitt</div>
+          <label class="form-label">Name</label>
+          <input class="form-input dark" id="new-sec-name" type="text" placeholder="z.B. Sicherheitsunterweisungen">
+          <label class="form-label">Ziel-Modul</label>
+          <select class="form-select dark" id="new-sec-module">
+            <option value="bf">Bf / Strecke</option>
+            <option value="regelwerke">Regelwerke</option>
+            <option value="betrieb">Betrieb-Info</option>
+            <option value="la">La – Langsamfahrstellen</option>
+            <option value="zugfahrt">Zugfahrt</option>
+          </select>
+          <label class="form-label">Icon</label>
+          <input class="form-input dark" id="new-sec-icon" type="text" value="📁" style="width:70px;">
+          <button class="admin-add-btn" id="btn-add-section">Erstellen</button>
+        </div>
+      </div>
+
+      <!-- UPLOAD -->
+      <div class="admin-panel" id="ap-upload">
+        <div class="panel-title">Datei hochladen</div>
+        <div class="aform" style="margin-bottom:10px;">
+          <label class="form-label">Ziel-Abschnitt</label>
+          <select class="form-select dark" id="upload-target-sec"></select>
+          <label class="form-label">Beschreibung</label>
+          <input class="form-input dark" id="upload-desc" type="text" placeholder="z.B. Gültig ab 01.2026">
+        </div>
+        <div class="upload-zone" id="upload-zone">
+          <input type="file" id="file-inp" multiple style="display:none;">
+          <div class="upload-zone-icon">📂</div>
+          <p>Tippen oder Dateien ablegen</p>
+          <p class="upload-zone-sub">PDF, DOCX, XLSX, TXT …</p>
+        </div>
+        <div class="upload-queue" id="upload-queue"></div>
+        <button class="admin-add-btn" id="upload-btn" style="display:none;">⬆ Hochladen</button>
+      </div>
+
+      <!-- EVU -->
+      <div class="admin-panel" id="ap-evu">
+        <div class="panel-title">EVU verwalten</div>
+        <div id="aevu-list" class="aevu-list"></div>
+        <div class="aform">
+          <div class="aform-title">＋ Neues EVU</div>
+          <label class="form-label">Name</label>
+          <input class="form-input dark" id="new-evu-name" type="text" placeholder="z.B. WestfalenBahn GmbH">
+          <label class="form-label">Kürzel</label>
+          <input class="form-input dark" id="new-evu-short" type="text" placeholder="z.B. WFB">
+          <label class="form-label">Beschreibung</label>
+          <input class="form-input dark" id="new-evu-desc" type="text" placeholder="z.B. RB · Westfalen">
+          <button class="admin-add-btn" id="btn-add-evu">EVU hinzufügen</button>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div class="admin-panel" id="ap-users">
+        <div class="panel-title">Benutzerverwaltung
+          <button class="admin-add-btn inline-btn" id="btn-new-user-open">＋ Neu</button>
+        </div>
+        <div class="user-search-row">
+          <input class="form-input dark" id="user-search" type="text" placeholder="Name oder Nummer …">
+          <select class="form-select dark compact" id="user-role-filter">
+            <option value="all">Alle</option>
+            <option value="admin">Admin</option>
+            <option value="redaktion">Redaktion</option>
+            <option value="moderator">Moderator</option>
+            <option value="nutzer">Nutzer</option>
+          </select>
+        </div>
+        <div class="user-stats-row" id="user-stats-row"></div>
+        <div id="user-list"></div>
+      </div>
+
+    </div><!-- /admin-panels -->
+  </div><!-- /admin-panel-wrap -->
+</div>
+
+<!-- ══════════ OVERLAYS ══════════ -->
+<!-- Tel Detail -->
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <button class="sheet-close" id="det-close">×</button>
+    <div id="det-content"></div>
+  </div>
+</div>
+
+<!-- New Thread -->
+<div class="overlay" id="thread-overlay">
+  <div class="sheet">
+    <button class="sheet-close" id="thread-overlay-close">×</button>
+    <div id="thread-overlay-content"></div>
+  </div>
+</div>
+
+<!-- New/Edit User -->
+<div class="overlay" id="user-overlay">
+  <div class="sheet admin-sheet">
+    <button class="sheet-close" id="user-overlay-close">×</button>
+    <div id="user-overlay-content"></div>
+  </div>
+</div>
+
+<!-- User Detail -->
+<div class="overlay" id="user-detail-overlay">
+  <div class="sheet admin-sheet">
+    <button class="sheet-close" id="user-detail-close">×</button>
+    <div id="user-detail-content"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Scripts: data first, then app logic -->
+<script src="data.js" defer></script>
+<script src="app.js" defer></script>
+
+</body>
+</html>
