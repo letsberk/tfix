@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#CC0000">
+  <meta name="description" content="RailApp – Eisenbahn Fachsystem">
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <title>RailApp</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ── STATUS BAR ────────────────────────────────────────── -->
+  <div id="status-bar" class="status-bar offline">
+    <span id="status-icon">⚡</span>
+    <span id="status-text">Verbinde…</span>
+    <button id="btn-sync" class="sync-btn" title="Synchronisieren">
+      <span class="sync-icon">↻</span>
+      <span>Sync</span>
+    </button>
+  </div>
+
+  <!-- ── SCREENS ───────────────────────────────────────────── -->
+
+  <!-- LOGIN -->
+  <div id="screen-login" class="screen active">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="logo-mark">R</div>
+        <div>
+          <h1>RailApp</h1>
+          <p>Eisenbahn Fachsystem</p>
+        </div>
+      </div>
+
+      <div id="auth-tabs" class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Anmelden</button>
+        <button class="auth-tab" data-tab="register">Registrieren</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="tab-login" class="auth-form">
+        <label class="field-label">E-Mail</label>
+        <input class="field-input" id="login-email" type="email" placeholder="name@bahn.de" autocomplete="email">
+        <label class="field-label">Passwort</label>
+        <input class="field-input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password">
+        <button class="btn-primary w-full" id="btn-login">Anmelden</button>
+        <div id="login-error" class="form-error hidden"></div>
+      </div>
+
+      <!-- Register Form -->
+      <div id="tab-register" class="auth-form hidden">
+        <label class="field-label">Vollständiger Name</label>
+        <input class="field-input" id="reg-name" type="text" placeholder="Max Mustermann">
+        <label class="field-label">E-Mail</label>
+        <input class="field-input" id="reg-email" type="email" placeholder="name@bahn.de" autocomplete="email">
+        <label class="field-label">Passwort</label>
+        <input class="field-input" id="reg-password" type="password" placeholder="Mind. 8 Zeichen" autocomplete="new-password">
+        <button class="btn-primary w-full" id="btn-register">Konto anlegen</button>
+        <div id="reg-error" class="form-error hidden"></div>
+        <p class="auth-hint">Nach der Registrierung muss ein Admin dein Konto freischalten.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- USER VIEW -->
+  <div id="screen-user" class="screen">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-logo">R</div>
+        <div>
+          <div class="topbar-title">RailApp</div>
+          <div class="topbar-sub" id="user-name-display">–</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="btn-offline-save" title="Offline speichern">📥</button>
+        <button class="icon-btn" id="btn-logout">⎋</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Search & Filter -->
+      <div class="search-bar">
+        <input class="search-input" id="search-input" type="text" placeholder="🔍 Suchen…">
+        <select class="search-select" id="category-filter">
+          <option value="">Alle Kategorien</option>
+        </select>
+      </div>
+
+      <!-- Offline Banner -->
+      <div id="offline-banner" class="offline-banner hidden">
+        📴 Offline-Modus · Daten aus lokalem Speicher
+      </div>
+
+      <!-- Items Grid -->
+      <div id="items-container" class="items-grid">
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Lade Daten…</p>
+        </div>
+      </div>
+
+      <!-- Offline Available List -->
+      <div id="offline-section" class="offline-section hidden">
+        <div class="section-header">📥 Offline verfügbar</div>
+        <div id="offline-list" class="offline-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div id="screen-admin" class="screen">
+    <div class="topbar admin-topbar">
+      <div class="topbar-left">
+        <div class="topbar-logo admin-logo">A</div>
+        <div>
+          <div class="topbar-title">Admin Panel</div>
+          <div class="topbar-sub" id="admin-name-display">–</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="btn-admin-to-user">👁</button>
+        <button class="icon-btn" id="btn-admin-logout">⎋</button>
+      </div>
+    </div>
+
+    <!-- Admin Nav Tabs -->
+    <div class="admin-nav">
+      <button class="admin-tab active" data-panel="panel-items">📋 Inhalte</button>
+      <button class="admin-tab" data-panel="panel-upload">📂 Upload</button>
+      <button class="admin-tab" data-panel="panel-users">👥 Nutzer</button>
+      <button class="admin-tab" data-panel="panel-stats">📊 Stats</button>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- ── PANEL: ITEMS ─── -->
+      <div id="panel-items" class="admin-panel active">
+        <div class="panel-toolbar">
+          <h2 class="panel-title">Inhalte verwalten</h2>
+          <button class="btn-primary" id="btn-new-item">＋ Neu</button>
+        </div>
+
+        <!-- Item Form (hidden by default) -->
+        <div id="item-form-wrap" class="form-card hidden">
+          <h3 class="form-title" id="item-form-title">Neuer Eintrag</h3>
+          <input type="hidden" id="item-id">
+          <label class="field-label">Titel *</label>
+          <input class="field-input" id="item-title" type="text" placeholder="Titel eingeben">
+          <label class="field-label">Beschreibung</label>
+          <textarea class="field-textarea" id="item-desc" placeholder="Beschreibung (optional)"></textarea>
+          <label class="field-label">Kategorie</label>
+          <select class="field-select" id="item-category">
+            <option value="allgemein">Allgemein</option>
+            <option value="regelwerke">Regelwerke</option>
+            <option value="technik">Technik</option>
+            <option value="betrieb">Betrieb</option>
+            <option value="sicherheit">Sicherheit</option>
+          </select>
+          <label class="field-label">Datei anhängen (optional)</label>
+          <input class="field-input" id="item-file-attach" type="text" placeholder="Datei-URL aus Upload-Tab einfügen">
+          <div class="form-actions">
+            <button class="btn-secondary" id="btn-cancel-item">Abbrechen</button>
+            <button class="btn-primary" id="btn-save-item">Speichern</button>
+          </div>
+          <div id="item-error" class="form-error hidden"></div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="table-wrap">
+          <table class="data-table" id="items-table">
+            <thead>
+              <tr>
+                <th>Titel</th>
+                <th>Kategorie</th>
+                <th>Erstellt</th>
+                <th>Datei</th>
+                <th>Aktionen</th>
+              </tr>
+            </thead>
+            <tbody id="items-table-body">
+              <tr><td colspan="5" class="table-empty">Lade…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PANEL: UPLOAD ─── -->
+      <div id="panel-upload" class="admin-panel">
+        <div class="panel-toolbar">
+          <h2 class="panel-title">Datei-Upload</h2>
+        </div>
+
+        <div class="upload-zone" id="upload-zone">
+          <input type="file" id="file-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.gif,.txt">
+          <div class="upload-zone-inner">
+            <div class="upload-icon">📂</div>
+            <p class="upload-title">Dateien hier ablegen</p>
+            <p class="upload-sub">oder klicken zum Auswählen</p>
+            <p class="upload-types">PDF · DOC · XLS · JPG · PNG · max 50 MB</p>
+          </div>
+        </div>
+
+        <div id="upload-queue" class="upload-queue hidden">
+          <div class="queue-header">
+            <span id="queue-count">0 Dateien ausgewählt</span>
+            <button class="btn-primary" id="btn-do-upload">⬆ Hochladen</button>
+          </div>
+          <div id="queue-list" class="queue-list"></div>
+        </div>
+
+        <div class="section-header" style="margin-top:20px">Hochgeladene Dateien</div>
+        <div id="uploaded-files-list" class="files-list">
+          <div class="files-empty">Noch keine Dateien</div>
+        </div>
+      </div>
+
+      <!-- ── PANEL: USERS ─── -->
+      <div id="panel-users" class="admin-panel">
+        <div class="panel-toolbar">
+          <h2 class="panel-title">Benutzerverwaltung</h2>
+          <span id="user-count" class="count-badge">– Nutzer</span>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>E-Mail</th>
+                <th>Rolle</th>
+                <th>Erstellt</th>
+                <th>Aktion</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body">
+              <tr><td colspan="5" class="table-empty">Lade…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PANEL: STATS ─── -->
+      <div id="panel-stats" class="admin-panel">
+        <div class="panel-toolbar">
+          <h2 class="panel-title">Statistiken</h2>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-num" id="stat-items">–</div>
+            <div class="stat-label">Einträge</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="stat-users-count">–</div>
+            <div class="stat-label">Nutzer</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="stat-files">–</div>
+            <div class="stat-label">Dateien</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="stat-offline">–</div>
+            <div class="stat-label">Offline gespeichert</div>
+          </div>
+        </div>
+        <div class="section-header" style="margin-top:20px">Sync Log</div>
+        <div id="sync-log-list" class="sync-log"></div>
+      </div>
+
+    </div><!-- /admin-content -->
+  </div>
+
+  <!-- ── ITEM DETAIL OVERLAY ─────────────────────────────── -->
+  <div class="overlay hidden" id="item-overlay">
+    <div class="overlay-sheet">
+      <button class="overlay-close" id="overlay-close">×</button>
+      <div id="overlay-content"></div>
+    </div>
+  </div>
+
+  <!-- ── TOAST ─────────────────────────────────────────────── -->
+  <div class="toast hidden" id="toast"></div>
+
+  <!-- ── CONFIG ─────────────────────────────────────────────── -->
+  <!--
+    ⚠️  HIER DEINE SUPABASE-DATEN EINTRAGEN
+    Supabase Dashboard → Project Settings → API
+  -->
+  <script>
+    window.SUPABASE_URL = 'https://ehmacbdsjtcnlvezdfpj.supabase.co';
+    window.SUPABASE_ANON_KEY = 'sb_publishable_C6RTBCRGu0Czi6q0z1P1NQ_3UxOeZHf';
+  </script>
+
+  <!-- Supabase SDK (via CDN, kein Build-Tool nötig) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <!-- Service Worker registrieren -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(function(reg) { console.log('SW registriert:', reg.scope); })
+          .catch(function(err) { console.warn('SW Fehler:', err); });
+      });
+    }
+  </script>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
