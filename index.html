@@ -4,312 +4,397 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <meta name="theme-color" content="#CC0000">
-  <meta name="description" content="RailApp – Eisenbahn Fachsystem">
-
-  <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
-
   <title>RailApp</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- ── STATUS BAR ────────────────────────────────────────── -->
-  <div id="status-bar" class="status-bar offline">
-    <span id="status-icon">⚡</span>
-    <span id="status-text">Verbinde…</span>
-    <button id="btn-sync" class="sync-btn" title="Synchronisieren">
-      <span class="sync-icon">↻</span>
-      <span>Sync</span>
+<div id="status-bar" class="status-bar offline">
+  <span id="status-icon">⚡</span>
+  <span id="status-text">Verbinde…</span>
+  <button id="btn-sync" class="sync-btn"><span class="sync-icon">↻</span> Sync</button>
+</div>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="screen-login" class="screen active">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-mark">R</div>
+      <div><h1>RailApp</h1><p>Eisenbahn Fachsystem</p></div>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">Anmelden</button>
+      <button class="auth-tab" data-tab="register">Registrieren</button>
+    </div>
+    <div id="tab-login" class="auth-form">
+      <label class="field-label">E-Mail</label>
+      <input class="field-input" id="login-email" type="email" placeholder="name@bahn.de" autocomplete="email">
+      <label class="field-label">Passwort</label>
+      <input class="field-input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password">
+      <button class="btn-primary w-full" id="btn-login">Anmelden</button>
+      <div id="login-error" class="form-error hidden"></div>
+    </div>
+    <div id="tab-register" class="auth-form hidden">
+      <label class="field-label">Name</label>
+      <input class="field-input" id="reg-name" type="text" placeholder="Max Mustermann">
+      <label class="field-label">E-Mail</label>
+      <input class="field-input" id="reg-email" type="email" placeholder="name@bahn.de" autocomplete="email">
+      <label class="field-label">Passwort</label>
+      <input class="field-input" id="reg-password" type="password" placeholder="Mind. 8 Zeichen" autocomplete="new-password">
+      <button class="btn-primary w-full" id="btn-register">Konto anlegen</button>
+      <div id="reg-error" class="form-error hidden"></div>
+      <p class="auth-hint">Ein Admin muss dein Konto freischalten.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ USER APP ═══ -->
+<div id="screen-user" class="screen">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">R</div>
+      <div>
+        <div class="topbar-title">RailApp</div>
+        <div class="topbar-sub" id="user-name-display">–</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn hidden" id="btn-user-admin" title="Admin">⚙</button>
+      <button class="icon-btn" id="btn-logout" title="Abmelden">⎋</button>
+    </div>
+  </div>
+
+  <div class="evu-bar">
+    <button class="evu-btn active" data-evu="alle">Alle</button>
+    <button class="evu-btn" data-evu="DB Fernverkehr">DB FV</button>
+    <button class="evu-btn" data-evu="DB Regio">DB Regio</button>
+    <button class="evu-btn" data-evu="Private EVU">Privat</button>
+  </div>
+
+  <div class="screen-content">
+
+    <!-- HOME -->
+    <div id="view-home">
+      <div class="tile-grid">
+        <button class="tile tile-primary" id="tile-telefonbuch">
+          <span class="tile-icon">📞</span>
+          <span class="tile-label">Telefonbuch</span>
+        </button>
+        <button class="tile tile-primary" id="tile-kategorien">
+          <span class="tile-icon">📋</span>
+          <span class="tile-label">Kategorien</span>
+        </button>
+        <button class="tile tile-fav" id="tile-favoriten">
+          <span class="tile-icon">⭐</span>
+          <span class="tile-label">Favoriten</span>
+          <span class="fav-count-badge hidden" id="fav-count-badge">0</span>
+        </button>
+        <div id="dynamic-tiles"></div>
+      </div>
+    </div>
+
+    <!-- TELEFONBUCH -->
+    <div id="view-telefonbuch" class="hidden">
+      <div class="view-header">
+        <button class="back-btn" id="back-from-tel">← Zurück</button>
+        <h2 class="view-title">📞 Telefonbuch</h2>
+      </div>
+
+      <div class="tel-search-wrap">
+        <div class="tel-search-main">
+          <span class="tel-search-icon">🔍</span>
+          <input class="tel-search-input" id="tel-search"
+            type="search" placeholder="Name, Ort, Rl100, Telefonnummer…"
+            autocomplete="off" autocorrect="off" spellcheck="false">
+          <button class="tel-clear-btn hidden" id="tel-search-clear">✕</button>
+        </div>
+        <div class="tel-filter-row">
+          <button class="tel-filter-btn active" data-kat="">Alle</button>
+          <button class="tel-filter-btn" data-kat="leitstelle">🏢 Leitstelle</button>
+          <button class="tel-filter-btn" data-kat="disposition">📊 Dispo</button>
+          <button class="tel-filter-btn" data-kat="notfall">🚨 Notfall</button>
+          <button class="tel-filter-btn" data-kat="sicherheit">🔒 Sicherheit</button>
+          <button class="tel-filter-btn" data-kat="allgemein">📋 Allgemein</button>
+        </div>
+      </div>
+
+      <div id="tel-info-bar" class="tel-info-bar hidden">
+        <span id="tel-info-text"></span>
+        <button class="tel-sort-btn" id="tel-sort-btn">A–Z ↕</button>
+      </div>
+
+      <div id="contacts-list" class="contacts-list">
+        <div class="tel-start-hint">
+          <div class="tel-hint-icon">📞</div>
+          <p>Suche im Telefonbuch</p>
+          <p class="tel-hint-sub">8.280 Einträge verfügbar<br>Name · Ort · Rl100 · Nummer</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- UNTERKATEGORIEN -->
+    <div id="view-subcategories" class="hidden">
+      <div class="view-header">
+        <button class="back-btn" id="back-from-sub">← Zurück</button>
+        <h2 class="view-title" id="subcategory-title">–</h2>
+      </div>
+      <div class="tile-grid" id="sub-tiles">
+        <div class="loading-msg"><div class="spinner"></div>Lade…</div>
+      </div>
+    </div>
+
+    <!-- INHALTE -->
+    <div id="view-items" class="hidden">
+      <div class="view-header">
+        <button class="back-btn" id="back-from-items">← Zurück</button>
+        <h2 class="view-title" id="items-view-title">–</h2>
+      </div>
+      <div id="items-list" class="items-list">
+        <div class="loading-msg"><div class="spinner"></div>Lade…</div>
+      </div>
+    </div>
+
+    <!-- FAVORITEN -->
+    <div id="view-favoriten" class="hidden">
+      <div class="view-header">
+        <button class="back-btn" id="back-from-fav">← Zurück</button>
+        <h2 class="view-title">⭐ Favoriten</h2>
+        <span class="result-count" id="fav-total-count"></span>
+      </div>
+      <div class="fav-tabs">
+        <button class="fav-tab active" data-ftab="all">Alle</button>
+        <button class="fav-tab" data-ftab="contact">📞 Kontakte</button>
+        <button class="fav-tab" data-ftab="item">📄 Inhalte</button>
+      </div>
+      <div id="fav-list" class="fav-list">
+        <div class="loading-msg"><div class="spinner"></div>Lade…</div>
+      </div>
+    </div>
+
+  </div><!-- /screen-content -->
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="nav-home">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Home</span>
     </button>
-  </div>
+    <button class="nav-btn" id="nav-tel">
+      <span class="nav-icon">📞</span>
+      <span class="nav-label">Telefon</span>
+    </button>
+    <button class="nav-btn" id="nav-fav">
+      <span class="nav-icon">⭐</span>
+      <span class="nav-label">Favoriten</span>
+      <span class="nav-badge hidden" id="nav-fav-badge">0</span>
+    </button>
+  </nav>
 
-  <!-- ── SCREENS ───────────────────────────────────────────── -->
+</div><!-- /screen-user -->
 
-  <!-- LOGIN -->
-  <div id="screen-login" class="screen active">
-    <div class="auth-card">
-      <div class="auth-logo">
-        <div class="logo-mark">R</div>
-        <div>
-          <h1>RailApp</h1>
-          <p>Eisenbahn Fachsystem</p>
-        </div>
-      </div>
-
-      <div id="auth-tabs" class="auth-tabs">
-        <button class="auth-tab active" data-tab="login">Anmelden</button>
-        <button class="auth-tab" data-tab="register">Registrieren</button>
-      </div>
-
-      <!-- Login Form -->
-      <div id="tab-login" class="auth-form">
-        <label class="field-label">E-Mail</label>
-        <input class="field-input" id="login-email" type="email" placeholder="name@bahn.de" autocomplete="email">
-        <label class="field-label">Passwort</label>
-        <input class="field-input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password">
-        <button class="btn-primary w-full" id="btn-login">Anmelden</button>
-        <div id="login-error" class="form-error hidden"></div>
-      </div>
-
-      <!-- Register Form -->
-      <div id="tab-register" class="auth-form hidden">
-        <label class="field-label">Vollständiger Name</label>
-        <input class="field-input" id="reg-name" type="text" placeholder="Max Mustermann">
-        <label class="field-label">E-Mail</label>
-        <input class="field-input" id="reg-email" type="email" placeholder="name@bahn.de" autocomplete="email">
-        <label class="field-label">Passwort</label>
-        <input class="field-input" id="reg-password" type="password" placeholder="Mind. 8 Zeichen" autocomplete="new-password">
-        <button class="btn-primary w-full" id="btn-register">Konto anlegen</button>
-        <div id="reg-error" class="form-error hidden"></div>
-        <p class="auth-hint">Nach der Registrierung muss ein Admin dein Konto freischalten.</p>
+<!-- ═══ ADMIN ═══ -->
+<div id="screen-admin" class="screen">
+  <div class="topbar admin-topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo admin-logo">A</div>
+      <div>
+        <div class="topbar-title">Admin Panel</div>
+        <div class="topbar-sub" id="admin-name-display">–</div>
       </div>
     </div>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="btn-admin-to-user">👁</button>
+      <button class="icon-btn" id="btn-admin-logout">⎋</button>
+    </div>
   </div>
+  <div class="admin-nav">
+    <button class="admin-tab active" data-panel="panel-categories">📋 Kategorien</button>
+    <button class="admin-tab" data-panel="panel-contacts">📞 Telefon</button>
+    <button class="admin-tab" data-panel="panel-items">📄 Inhalte</button>
+    <button class="admin-tab" data-panel="panel-users">👥 Nutzer</button>
+  </div>
+  <div class="admin-content">
 
-  <!-- USER VIEW -->
-  <div id="screen-user" class="screen">
-    <div class="topbar">
-      <div class="topbar-left">
-        <div class="topbar-logo">R</div>
-        <div>
-          <div class="topbar-title">RailApp</div>
-          <div class="topbar-sub" id="user-name-display">–</div>
+    <div id="panel-categories" class="admin-panel active">
+      <div class="panel-toolbar">
+        <h2 class="panel-title">Kategorien</h2>
+        <div style="display:flex;gap:8px">
+          <button class="btn-secondary" id="btn-new-subcat">＋ Unterkategorie</button>
+          <button class="btn-primary" id="btn-new-category">＋ Kategorie</button>
         </div>
       </div>
-      <div class="topbar-actions">
-        <button class="icon-btn" id="btn-offline-save" title="Offline speichern">📥</button>
-        <button class="icon-btn" id="btn-logout">⎋</button>
-      </div>
-    </div>
-
-    <div class="content">
-      <!-- Search & Filter -->
-      <div class="search-bar">
-        <input class="search-input" id="search-input" type="text" placeholder="🔍 Suchen…">
-        <select class="search-select" id="category-filter">
-          <option value="">Alle Kategorien</option>
+      <div id="cat-form-wrap" class="form-card hidden">
+        <h3 class="form-title" id="cat-form-title">Neue Kategorie</h3>
+        <input type="hidden" id="cat-id">
+        <label class="field-label">Name *</label>
+        <input class="field-input" id="cat-name" type="text" placeholder="z.B. Regelwerke">
+        <label class="field-label">Icon</label>
+        <input class="field-input" id="cat-icon" type="text" placeholder="📋" style="width:80px">
+        <label class="field-label">EVU</label>
+        <select class="field-select" id="cat-evu">
+          <option value="alle">Alle EVU</option>
+          <option value="DB Fernverkehr">DB Fernverkehr</option>
+          <option value="DB Regio">DB Regio</option>
+          <option value="Private EVU">Private EVU</option>
         </select>
-      </div>
-
-      <!-- Offline Banner -->
-      <div id="offline-banner" class="offline-banner hidden">
-        📴 Offline-Modus · Daten aus lokalem Speicher
-      </div>
-
-      <!-- Items Grid -->
-      <div id="items-container" class="items-grid">
-        <div class="loading-state">
-          <div class="spinner"></div>
-          <p>Lade Daten…</p>
+        <div class="form-actions">
+          <button class="btn-secondary" id="btn-cancel-cat">Abbrechen</button>
+          <button class="btn-primary" id="btn-save-cat">Speichern</button>
         </div>
+        <div id="cat-error" class="form-error hidden"></div>
       </div>
-
-      <!-- Offline Available List -->
-      <div id="offline-section" class="offline-section hidden">
-        <div class="section-header">📥 Offline verfügbar</div>
-        <div id="offline-list" class="offline-list"></div>
+      <div id="subcat-form-wrap" class="form-card hidden">
+        <h3 class="form-title" id="subcat-form-title">Neue Unterkategorie</h3>
+        <input type="hidden" id="subcat-id">
+        <label class="field-label">Übergeordnete Kategorie *</label>
+        <select class="field-select" id="subcat-parent"></select>
+        <label class="field-label">Name *</label>
+        <input class="field-input" id="subcat-name" type="text" placeholder="z.B. Signalbuch">
+        <label class="field-label">Icon</label>
+        <input class="field-input" id="subcat-icon" type="text" placeholder="📄" style="width:80px">
+        <label class="field-label">EVU</label>
+        <select class="field-select" id="subcat-evu">
+          <option value="alle">Alle EVU</option>
+          <option value="DB Fernverkehr">DB Fernverkehr</option>
+          <option value="DB Regio">DB Regio</option>
+          <option value="Private EVU">Private EVU</option>
+        </select>
+        <div class="form-actions">
+          <button class="btn-secondary" id="btn-cancel-subcat">Abbrechen</button>
+          <button class="btn-primary" id="btn-save-subcat">Speichern</button>
+        </div>
+        <div id="subcat-error" class="form-error hidden"></div>
+      </div>
+      <div class="table-wrap" style="margin-top:8px">
+        <table class="data-table">
+          <thead><tr><th>Icon</th><th>Name</th><th>EVU</th><th>Unterkategorien</th><th>Aktionen</th></tr></thead>
+          <tbody id="cat-table-body"><tr><td colspan="5" class="table-empty">Lade…</td></tr></tbody>
+        </table>
       </div>
     </div>
+
+    <div id="panel-contacts" class="admin-panel">
+      <div class="panel-toolbar">
+        <h2 class="panel-title">Telefonbuch</h2>
+        <button class="btn-primary" id="btn-new-contact">＋ Kontakt</button>
+      </div>
+      <div id="contact-form-wrap" class="form-card hidden">
+        <h3 class="form-title" id="contact-form-title">Neuer Kontakt</h3>
+        <input type="hidden" id="contact-id">
+        <label class="field-label">Name *</label>
+        <input class="field-input" id="contact-name" type="text" placeholder="z.B. Leitstelle Frankfurt">
+        <label class="field-label">Funktion</label>
+        <input class="field-input" id="contact-funktion" type="text" placeholder="z.B. Betriebszentrale">
+        <label class="field-label">Telefon *</label>
+        <input class="field-input" id="contact-telefon" type="tel" placeholder="z.B. 069-265-0">
+        <label class="field-label">EVU</label>
+        <select class="field-select" id="contact-evu">
+          <option value="alle">Alle EVU</option>
+          <option value="DB Fernverkehr">DB Fernverkehr</option>
+          <option value="DB Regio">DB Regio</option>
+          <option value="Private EVU">Private EVU</option>
+        </select>
+        <label class="field-label">Gruppe</label>
+        <select class="field-select" id="contact-kat">
+          <option value="allgemein">Allgemein</option>
+          <option value="leitstelle">Leitstelle</option>
+          <option value="disposition">Disposition</option>
+          <option value="notfall">Notfall</option>
+          <option value="sicherheit">Sicherheit</option>
+        </select>
+        <label class="field-label">Notiz</label>
+        <input class="field-input" id="contact-notiz" type="text" placeholder="Optional">
+        <div class="form-actions">
+          <button class="btn-secondary" id="btn-cancel-contact">Abbrechen</button>
+          <button class="btn-primary" id="btn-save-contact">Speichern</button>
+        </div>
+        <div id="contact-error" class="form-error hidden"></div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Funktion</th><th>Telefon</th><th>EVU</th><th>Gruppe</th><th>Aktionen</th></tr></thead>
+          <tbody id="contacts-table-body"><tr><td colspan="6" class="table-empty">Lade…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="panel-items" class="admin-panel">
+      <div class="panel-toolbar">
+        <h2 class="panel-title">Inhalte</h2>
+        <button class="btn-primary" id="btn-new-item">＋ Neu</button>
+      </div>
+      <div id="item-form-wrap" class="form-card hidden">
+        <h3 class="form-title" id="item-form-title">Neuer Eintrag</h3>
+        <input type="hidden" id="item-id">
+        <label class="field-label">Titel *</label>
+        <input class="field-input" id="item-title" type="text" placeholder="Titel">
+        <label class="field-label">Beschreibung</label>
+        <textarea class="field-textarea" id="item-desc" placeholder="Beschreibung"></textarea>
+        <label class="field-label">Kategorie</label>
+        <select class="field-select" id="item-category-sel"><option value="">– keine –</option></select>
+        <label class="field-label">Unterkategorie</label>
+        <select class="field-select" id="item-subcategory-sel"><option value="">– keine –</option></select>
+        <label class="field-label">EVU</label>
+        <select class="field-select" id="item-evu">
+          <option value="alle">Alle EVU</option>
+          <option value="DB Fernverkehr">DB Fernverkehr</option>
+          <option value="DB Regio">DB Regio</option>
+          <option value="Private EVU">Private EVU</option>
+        </select>
+        <label class="field-label">Datei-URL</label>
+        <input class="field-input" id="item-file-attach" type="text" placeholder="https://…">
+        <div class="form-actions">
+          <button class="btn-secondary" id="btn-cancel-item">Abbrechen</button>
+          <button class="btn-primary" id="btn-save-item">Speichern</button>
+        </div>
+        <div id="item-error" class="form-error hidden"></div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Titel</th><th>Kategorie</th><th>EVU</th><th>Datei</th><th>Aktionen</th></tr></thead>
+          <tbody id="items-table-body"><tr><td colspan="5" class="table-empty">Lade…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="panel-users" class="admin-panel">
+      <div class="panel-toolbar">
+        <h2 class="panel-title">Benutzerverwaltung</h2>
+        <span class="count-badge" id="user-count">–</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>E-Mail</th><th>Rolle</th><th>Erstellt</th><th>Aktion</th></tr></thead>
+          <tbody id="users-table-body"><tr><td colspan="5" class="table-empty">Lade…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
+</div>
 
-  <!-- ADMIN PANEL -->
-  <div id="screen-admin" class="screen">
-    <div class="topbar admin-topbar">
-      <div class="topbar-left">
-        <div class="topbar-logo admin-logo">A</div>
-        <div>
-          <div class="topbar-title">Admin Panel</div>
-          <div class="topbar-sub" id="admin-name-display">–</div>
-        </div>
-      </div>
-      <div class="topbar-actions">
-        <button class="icon-btn" id="btn-admin-to-user">👁</button>
-        <button class="icon-btn" id="btn-admin-logout">⎋</button>
-      </div>
-    </div>
-
-    <!-- Admin Nav Tabs -->
-    <div class="admin-nav">
-      <button class="admin-tab active" data-panel="panel-items">📋 Inhalte</button>
-      <button class="admin-tab" data-panel="panel-upload">📂 Upload</button>
-      <button class="admin-tab" data-panel="panel-users">👥 Nutzer</button>
-      <button class="admin-tab" data-panel="panel-stats">📊 Stats</button>
-    </div>
-
-    <div class="admin-content">
-
-      <!-- ── PANEL: ITEMS ─── -->
-      <div id="panel-items" class="admin-panel active">
-        <div class="panel-toolbar">
-          <h2 class="panel-title">Inhalte verwalten</h2>
-          <button class="btn-primary" id="btn-new-item">＋ Neu</button>
-        </div>
-
-        <!-- Item Form (hidden by default) -->
-        <div id="item-form-wrap" class="form-card hidden">
-          <h3 class="form-title" id="item-form-title">Neuer Eintrag</h3>
-          <input type="hidden" id="item-id">
-          <label class="field-label">Titel *</label>
-          <input class="field-input" id="item-title" type="text" placeholder="Titel eingeben">
-          <label class="field-label">Beschreibung</label>
-          <textarea class="field-textarea" id="item-desc" placeholder="Beschreibung (optional)"></textarea>
-          <label class="field-label">Kategorie</label>
-          <select class="field-select" id="item-category">
-            <option value="allgemein">Allgemein</option>
-            <option value="regelwerke">Regelwerke</option>
-            <option value="technik">Technik</option>
-            <option value="betrieb">Betrieb</option>
-            <option value="sicherheit">Sicherheit</option>
-          </select>
-          <label class="field-label">Datei anhängen (optional)</label>
-          <input class="field-input" id="item-file-attach" type="text" placeholder="Datei-URL aus Upload-Tab einfügen">
-          <div class="form-actions">
-            <button class="btn-secondary" id="btn-cancel-item">Abbrechen</button>
-            <button class="btn-primary" id="btn-save-item">Speichern</button>
-          </div>
-          <div id="item-error" class="form-error hidden"></div>
-        </div>
-
-        <!-- Items Table -->
-        <div class="table-wrap">
-          <table class="data-table" id="items-table">
-            <thead>
-              <tr>
-                <th>Titel</th>
-                <th>Kategorie</th>
-                <th>Erstellt</th>
-                <th>Datei</th>
-                <th>Aktionen</th>
-              </tr>
-            </thead>
-            <tbody id="items-table-body">
-              <tr><td colspan="5" class="table-empty">Lade…</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ── PANEL: UPLOAD ─── -->
-      <div id="panel-upload" class="admin-panel">
-        <div class="panel-toolbar">
-          <h2 class="panel-title">Datei-Upload</h2>
-        </div>
-
-        <div class="upload-zone" id="upload-zone">
-          <input type="file" id="file-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.gif,.txt">
-          <div class="upload-zone-inner">
-            <div class="upload-icon">📂</div>
-            <p class="upload-title">Dateien hier ablegen</p>
-            <p class="upload-sub">oder klicken zum Auswählen</p>
-            <p class="upload-types">PDF · DOC · XLS · JPG · PNG · max 50 MB</p>
-          </div>
-        </div>
-
-        <div id="upload-queue" class="upload-queue hidden">
-          <div class="queue-header">
-            <span id="queue-count">0 Dateien ausgewählt</span>
-            <button class="btn-primary" id="btn-do-upload">⬆ Hochladen</button>
-          </div>
-          <div id="queue-list" class="queue-list"></div>
-        </div>
-
-        <div class="section-header" style="margin-top:20px">Hochgeladene Dateien</div>
-        <div id="uploaded-files-list" class="files-list">
-          <div class="files-empty">Noch keine Dateien</div>
-        </div>
-      </div>
-
-      <!-- ── PANEL: USERS ─── -->
-      <div id="panel-users" class="admin-panel">
-        <div class="panel-toolbar">
-          <h2 class="panel-title">Benutzerverwaltung</h2>
-          <span id="user-count" class="count-badge">– Nutzer</span>
-        </div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>E-Mail</th>
-                <th>Rolle</th>
-                <th>Erstellt</th>
-                <th>Aktion</th>
-              </tr>
-            </thead>
-            <tbody id="users-table-body">
-              <tr><td colspan="5" class="table-empty">Lade…</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ── PANEL: STATS ─── -->
-      <div id="panel-stats" class="admin-panel">
-        <div class="panel-toolbar">
-          <h2 class="panel-title">Statistiken</h2>
-        </div>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-num" id="stat-items">–</div>
-            <div class="stat-label">Einträge</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num" id="stat-users-count">–</div>
-            <div class="stat-label">Nutzer</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num" id="stat-files">–</div>
-            <div class="stat-label">Dateien</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num" id="stat-offline">–</div>
-            <div class="stat-label">Offline gespeichert</div>
-          </div>
-        </div>
-        <div class="section-header" style="margin-top:20px">Sync Log</div>
-        <div id="sync-log-list" class="sync-log"></div>
-      </div>
-
-    </div><!-- /admin-content -->
+<!-- KONTAKT OVERLAY -->
+<div class="overlay hidden" id="contact-overlay">
+  <div class="overlay-sheet">
+    <button class="overlay-close" id="contact-overlay-close">×</button>
+    <div id="contact-overlay-content"></div>
   </div>
+</div>
 
-  <!-- ── ITEM DETAIL OVERLAY ─────────────────────────────── -->
-  <div class="overlay hidden" id="item-overlay">
-    <div class="overlay-sheet">
-      <button class="overlay-close" id="overlay-close">×</button>
-      <div id="overlay-content"></div>
-    </div>
-  </div>
+<div class="toast hidden" id="toast"></div>
 
-  <!-- ── TOAST ─────────────────────────────────────────────── -->
-  <div class="toast hidden" id="toast"></div>
-
-  <!-- ── CONFIG ─────────────────────────────────────────────── -->
-  <!--
-    ⚠️  HIER DEINE SUPABASE-DATEN EINTRAGEN
-    Supabase Dashboard → Project Settings → API
-  -->
-  <script>
-    window.SUPABASE_URL = 'https://ehmacbdsjtcnlvezdfpj.supabase.co';
-    window.SUPABASE_ANON_KEY = 'sb_publishable_C6RTBCRGu0Czi6q0z1P1NQ_3UxOeZHf';
-  </script>
-
-  <!-- Supabase SDK (via CDN, kein Build-Tool nötig) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-
-  <!-- Service Worker registrieren -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/service-worker.js')
-          .then(function(reg) { console.log('SW registriert:', reg.scope); })
-          .catch(function(err) { console.warn('SW Fehler:', err); });
-      });
-    }
-  </script>
-
-  <script src="app.js" defer></script>
+<script>
+  window.SUPABASE_URL      = 'https://ehmacbdsjtcnlvezdfpj.supabase.co';
+  window.SUPABASE_ANON_KEY = 'sb_publishable_C6RTBCRGu0Czi6q0z1P1NQ_3UxOeZHf';
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+  }
+</script>
+<script src="app.js" defer></script>
 </body>
 </html>
